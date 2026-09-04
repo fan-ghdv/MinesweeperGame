@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Minesweeper</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div class="game-container">
+
+        <h1>Minesweeper</h1>
+
+        <!-- =========================
+             Mode
+        ========================== -->
+
+        <div class="mode-selector">
+
+            <span class="mode-title">
+                Mode
+            </span>
+
+            <div class="mode-buttons">
+
+                <button
+                    class="mode-button active"
+                    data-mode="standard"
+                >
+                    Standard
+                </button>
+
+                <button
+                    class="mode-button"
+                    data-mode="no-guessing"
+                >
+                    No Guessing
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             Difficulty
+        ========================== -->
+
+        <div class="difficulty-selector">
+
+            <span class="difficulty-title">
+                Difficulty
+            </span>
+
+            <div class="difficulty-buttons">
+
+                <button
+                    class="difficulty-button active"
+                    data-difficulty="easy"
+                >
+                    Easy
+                </button>
+
+                <button
+                    class="difficulty-button"
+                    data-difficulty="normal"
+                >
+                    Normal
+                </button>
+
+                <button
+                    class="difficulty-button"
+                    data-difficulty="hard"
+                >
+                    Hard
+                </button>
+
+                <button
+                    class="difficulty-button huge-button"
+                    data-difficulty="huge"
+                >
+                    HUGE
+                </button>
+
+                <button
+                    class="difficulty-button"
+                    data-difficulty="guess"
+                >
+                    Guess
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             Game Info
+        ========================== -->
+
+        <div class="game-info">
+
+            <span>
+
+                💣 Mines:
+
+                <strong id="mine-count">
+                    10
+                </strong>
+
+            </span>
+
+
+            <button id="reset-button">
+                New Game
+            </button>
+
+
+            <span>
+
+                ⏱ Time: 
+
+                <strong id="timer">
+                    000
+                </strong>
+
+            </span>
+
+        </div>
+
+
+        <!-- =========================
+             Board
+        ========================== -->
+
+        <div class="board-wrapper">
+
+            <div
+                id="board"
+                class="board"
+            ></div>
+
+        </div>
+
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,575 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-family: Arial, sans-serif;
+
+    background: #3A3937;
+    color: #f0f0f0;
+
+    overflow: auto;
+}
+
+
+/* =========================
+   Game Container
+========================= */
+
+.game-container {
+    width: min(95vw, 900px);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 20px;
+
+    margin: auto;
+}
+
+/* =========================
+   Mode
+========================= */
+
+.mode-selector {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.mode-title {
+    font-size: 16px;
+    font-weight: bold;
+
+    color: #AAAAAA;
+}
+
+.mode-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.mode-button {
+    padding: 9px 16px;
+
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: #3A3937;
+    color: #f0f0f0;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.mode-button:hover {
+    background: #3A3937;
+
+    transform: translateY(-1px);
+}
+
+.mode-button.active {
+    background: #2f80ed;
+    color: white;
+
+    border-color: #2f80ed;
+}
+
+.mode-button:disabled,
+.difficulty-button:disabled {
+    background: #292826;
+    color: #66635f;
+
+    border-color: #3A3937;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+.mode-button:disabled:hover,
+.difficulty-button:disabled:hover {
+    background: #292826;
+    color: #66635f;
+
+    border-color: #3A3937;
+
+    transform: none;
+}
+
+#timer {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+}
+
+.huge-timer {
+    color: #dc2626;
+    font-weight: 800;
+}
+
+
+/* =========================
+   Difficulty
+========================= */
+
+.difficulty-selector {
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 10px;
+}
+
+.difficulty-title {
+    font-size: 16px;
+    font-weight: bold;
+
+    color: #AAAAAA;
+}
+
+.difficulty-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.difficulty-button {
+    padding: 9px 16px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+
+    background: #3A3937;
+    color: #f0f0f0;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.difficulty-button:hover {
+    background: #3A3937;
+
+    transform: translateY(-1px);
+}
+
+.difficulty-button.active {
+    background: #2f80ed;
+    color: white;
+
+    border-color: #2f80ed;
+}
+
+
+/* =========================
+   HUGE Button
+========================= */
+
+.huge-button {
+    width: 78px;
+    height: 38px;
+
+    padding: 0;
+
+    font-size: 18px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+
+/* =========================
+   Game Info
+========================= */
+
+.game-info {
+    width: 100%;
+    max-width: 620px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 20px;
+
+    background: #3A3937;
+
+    border: 2px solid #111111;
+
+        border-radius: 14px;
+
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+
+    font-size: 18px;
+}
+
+.game-info span {
+    min-width: 100px;
+}
+
+.game-info span:last-child {
+    text-align: right;
+}
+
+
+/* =========================
+   General Buttons
+========================= */
+
+button {
+    padding: 10px 18px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: #2f80ed;
+    color: white;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        transform 0.2s;
+}
+
+button:hover {
+    transform: translateY(-1px);
+
+    background: #256dcc;
+}
+
+
+/* =========================
+   Board
+========================= */
+
+.board {
+    display: grid;
+
+    grid-template-columns: repeat(var(--cols), 28px);
+    grid-template-rows: repeat(var(--rows), 28px);
+
+    gap: 1px;
+
+    width: max-content;
+    height: max-content;
+
+    padding: 2px;
+
+    /* Dark gray outer board */
+    background: #242321;
+
+    border-radius: 0;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.45);
+
+    margin: 0 auto;
+}
+
+
+/* =========================
+   Cell
+========================= */
+
+.cell {
+    width: 28px;
+    height: 28px;
+
+    min-width: 28px;
+    min-height: 28px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /* Dark gray unopened cell */
+    background: #4A4946;
+
+    /* Dark gray border */
+    border: 2px solid #5A5956;
+    border-right-color: #292826;
+    border-bottom-color: #292826;
+
+    border-radius: 0;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    user-select: none;
+
+    transition:
+        background 0.1s,
+        transform 0.1s;
+}
+
+
+/* =========================
+   Cell Hover
+========================= */
+
+.cell:hover {
+    background: #555451;
+}
+
+
+/* =========================
+   Revealed Cell
+========================= */
+
+.cell.revealed {
+    background: #363533;
+
+    border: 1px solid #292826;
+
+    cursor: default;
+}
+
+
+/* =========================
+   Mine
+========================= */
+
+.cell.mine {
+    background: #b91c1c;
+
+    border: 1px solid #7f1d1d;
+}
+
+
+/* =========================
+   Flag
+========================= */
+
+.cell.flagged {
+    background: #51483f;
+}
+
+
+/* =========================
+   Number Colors
+========================= */
+
+.cell.number-1 {
+    color: #60a5fa;
+}
+
+.cell.number-2 {
+    color: #4ade80;
+}
+
+.cell.number-3 {
+    color: #f87171;
+}
+
+.cell.number-4 {
+    color: #818cf8;
+}
+
+.cell.number-5 {
+    color: #fb7185;
+}
+
+.cell.number-6 {
+    color: #22d3ee;
+}
+
+.cell.number-7 {
+    color: #f3f4f6;
+}
+
+.cell.number-8 {
+    color: #9ca3af;
+}
+
+
+.board-wrapper {
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+/* =========================
+   Mobile
+========================= */
+
+@media (max-width: 600px) {
+    body {
+        align-items: flex-start;
+        padding-top: 25px;
+        padding-bottom: 25px;
+    }
+
+    .game-container {
+        width: 95vw;
+        gap: 15px;
+    }
+
+    .mode-selector {
+        width: 100%;
+        gap: 9px;
+    }
+
+    .mode-title {
+        font-size: 15px;
+    }
+
+    .mode-buttons {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .mode-button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .difficulty-selector {
+        width: 100%;
+        gap: 9px;
+    }
+
+    .difficulty-title {
+        font-size: 15px;
+    }
+
+    .difficulty-buttons {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .difficulty-button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .huge-button {
+        width: 68px;
+        height: 34px;
+
+        padding: 0;
+
+        font-size: 16px;
+        letter-spacing: 0.8px;
+    }
+
+    .game-info {
+        width: 100%;
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .game-info span {
+        min-width: auto;
+    }
+
+    button {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+
+    .board {
+        width: max-content;
+
+        padding: 2px;
+        gap: 1px;
+
+        overflow: visible;
+    }
+
+    .cell {
+        width: 28px;
+        height: 28px;
+
+        min-width: 28px;
+        min-height: 28px;
+
+        font-size: 24px;
+
+        border-width: 1px;
+        border-radius: 0px;
+    }
+}
+
+
+/* =========================
+   Very Small Screens
+========================= */
+
+@media (max-width: 400px) {
+
+    .difficulty-buttons {
+        gap: 5px;
+    }
+
+    .difficulty-button {
+        padding: 7px 9px;
+
+        font-size: 12px;
+    }
+
+    .huge-button {
+        font-size: 13px;
+
+        letter-spacing: 0.6px;
+
+        padding-left: 11px;
+        padding-right: 11px;
+    }
+
+    .game-info {
+        padding: 10px;
+
+        font-size: 13px;
+    }
+
+    button {
+        padding: 7px 9px;
+
+        font-size: 12px;
+    }
+}
