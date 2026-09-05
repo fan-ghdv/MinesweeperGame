@@ -435,7 +435,7 @@ function createBoard() {
 
     else {
 
-        generateGuaranteedLogicalBoard();
+        boardReady = false;
 
     }
 
@@ -594,8 +594,9 @@ function handleCellClick(cell) {
 
 
     /*
-     * No Guessing boards are already
-     * generated and validated.
+     * =====================================
+     * FIRST CLICK - NO GUESSING
+     * =====================================
      */
 
     if (
@@ -603,13 +604,37 @@ function handleCellClick(cell) {
         !boardReady
     ) {
 
-        return;
+        const firstRow =
+            Number(cell.dataset.row);
+
+        const firstCol =
+            Number(cell.dataset.col);
+
+
+        const generated =
+            generateGuaranteedLogicalBoard(
+                firstRow,
+                firstCol
+            );
+
+
+        /*
+         * If generation failed,
+         * do not allow the player
+         * to make a random move.
+         */
+
+        if (!generated) {
+
+            return;
+
+        }
 
     }
 
 
     /*
-     * Revealed cell = chord.
+     * Revealed cell = Chord.
      */
 
     if (
@@ -1282,18 +1307,49 @@ function checkWin() {
    GENERATE GUARANTEED LOGICAL BOARD
 ========================================================= */
 
-function generateGuaranteedLogicalBoard() {
+function generateGuaranteedLogicalBoard(
+    firstRow,
+    firstCol
+) {
 
-    /*
-     * Number of attempts is intentionally limited.
-     *
-     * If a random board cannot be logically solved,
-     * it is discarded.
-     */
+    const firstIndex =
+        firstRow * COLS +
+        firstCol;
+
 
     const total =
         ROWS * COLS;
 
+
+    /*
+     * The player's actual first click
+     * is now the guaranteed zero cell.
+     */
+
+    const safeArea =
+        getSafeStartingArea(
+            firstIndex
+        );
+
+
+    if (
+        total -
+        safeArea.size <
+        MINES
+    ) {
+
+        console.error(
+            "Not enough space for mines."
+        );
+
+        return false;
+
+    }
+
+
+    /*
+     * Try random boards.
+     */
 
     let maxAttempts;
 
@@ -1317,40 +1373,35 @@ function generateGuaranteedLogicalBoard() {
     }
 
 
-    /*
-     * Try different starting positions.
-     */
+    for (
+        let attempt = 0;
+        attempt < maxAttempts;
+        attempt++
+    ) {
 
-    const startIndices =
-        createShuffledIndices(
-            total
+        clearMines();
+
+
+        /*
+         * Never put a mine inside
+         * the first-click area.
+         */
+
+        placeMinesOutsideSafeArea(
+            safeArea
         );
 
 
-    /*
-     * We try several starting positions.
-     */
+        calculateAdjacentMines();
 
-    for (
-        const firstIndex
-        of startIndices
-    ) {
 
         /*
-         * A minefield needs enough room
-         * outside the 3x3 starting area.
+         * The actual clicked cell
+         * MUST be zero.
          */
 
-        const safeArea =
-            getSafeStartingArea(
-                firstIndex
-            );
-
-
         if (
-            total -
-            safeArea.size <
-            MINES
+            adjacentMines[firstIndex] !== 0
         ) {
 
             continue;
@@ -1359,56 +1410,19 @@ function generateGuaranteedLogicalBoard() {
 
 
         /*
-         * Try random boards.
+         * The entire board must be
+         * solvable without guessing.
          */
 
-        for (
-            let attempt = 0;
-            attempt < maxAttempts;
-            attempt++
+        if (
+            verifyBoardWithoutGuessing(
+                firstIndex
+            )
         ) {
 
-            clearMines();
+            boardReady = true;
 
-
-            placeMinesOutsideSafeArea(
-                safeArea
-            );
-
-
-            calculateAdjacentMines();
-
-
-            /*
-             * First cell must be zero.
-             */
-
-            if (
-                adjacentMines[
-                    firstIndex
-                ] !== 0
-            ) {
-
-                continue;
-
-            }
-
-
-            /*
-             * Strict logical verification.
-             */
-
-            if (
-                verifyBoardWithoutGuessing(
-                    firstIndex
-                )
-            ) {
-
-                boardReady = true;
-
-                return;
-
-            }
+            return true;
 
         }
 
@@ -1416,63 +1430,16 @@ function generateGuaranteedLogicalBoard() {
 
 
     /*
-     * If random generation did not find
-     * a logical board, use a deterministic
-     * construction.
-     *
-     * This construction is itself verified
-     * by the same solver.
-     */
-
-    if (
-        generateStructuredLogicalBoard()
-    ) {
-
-        boardReady = true;
-
-        return;
-
-    }
-
-
-    /*
-     * Extremely unusual case.
-     *
-     * Instead of silently accepting a
-     * guess-required board, show an
-     * error in the console and generate
-     * a safe board.
-     *
-     * This is NOT considered a valid
-     * No Guessing board.
+     * Do NOT accept an unverified
+     * random board.
      */
 
     console.error(
-        "Unable to generate a fully logical No Guessing board."
+        "Could not generate a logical No Guessing board."
     );
 
 
-    /*
-     * Keep the game usable.
-     * This should rarely be reached.
-     */
-
-    clearMines();
-
-
-    const safeArea =
-        getSafeStartingArea(0);
-
-
-    placeMinesOutsideSafeArea(
-        safeArea
-    );
-
-
-    calculateAdjacentMines();
-
-
-    boardReady = true;
+    return false;
 
 }
 
