@@ -26,20 +26,7 @@ let timerInterval = null;
 
 let gameStarted = false;
 
-
-/*
- * standard
- * no-guessing
- */
-
 let gameMode = "standard";
-
-
-/*
- * In No Guessing Mode,
- * the board is generated before
- * the player starts revealing.
- */
 
 let boardReady = false;
 
@@ -105,10 +92,6 @@ function startTimer() {
     gameStarted = true;
 
 
-    /*
-     * HUGE uses countdown.
-     */
-
     if (
         ROWS === 30 &&
         COLS === 48
@@ -147,10 +130,6 @@ function startTimer() {
         return;
     }
 
-
-    /*
-     * Other difficulties count upward.
-     */
 
     timer = 0;
 
@@ -209,10 +188,6 @@ function changeDifficulty(difficulty) {
     }
 
 
-    /*
-     * Guess is unavailable
-     * in No Guessing Mode.
-     */
 
     if (
         gameMode === "no-guessing" &&
@@ -266,6 +241,8 @@ function changeDifficulty(difficulty) {
 function createBoard() {
 
     stopTimer();
+
+    clearGameResultStyle();
 
 
     board.innerHTML = "";
@@ -371,10 +348,6 @@ function createBoard() {
             cell.mine = false;
 
 
-            /*
-             * Left click.
-             */
-
             cell.addEventListener(
                 "click",
                 () => {
@@ -386,10 +359,6 @@ function createBoard() {
                 }
             );
 
-
-            /*
-             * Right click.
-             */
 
             cell.addEventListener(
                 "contextmenu",
@@ -495,14 +464,6 @@ function calculateAdjacentMines() {
         ).fill(0);
 
 
-    /*
-     * Instead of checking every cell
-     * against every neighbour,
-     * visit the neighbours of each mine.
-     *
-     * This is considerably faster on HUGE.
-     */
-
     for (
         let index = 0;
         index < cells.length;
@@ -593,11 +554,9 @@ function handleCellClick(cell) {
     }
 
 
-    /*
-     * =====================================
-     * FIRST CLICK - NO GUESSING
-     * =====================================
-     */
+    /* =====================================
+       FIRST CLICK - NO GUESSING
+    ===================================== */
 
     if (
         gameMode === "no-guessing" &&
@@ -618,12 +577,6 @@ function handleCellClick(cell) {
             );
 
 
-        /*
-         * If generation failed,
-         * do not allow the player
-         * to make a random move.
-         */
-
         if (!generated) {
 
             return;
@@ -632,10 +585,6 @@ function handleCellClick(cell) {
 
     }
 
-
-    /*
-     * Revealed cell = Chord.
-     */
 
     if (
         cell.classList.contains(
@@ -679,11 +628,6 @@ function revealCell(cell) {
 
     }
 
-
-    /*
-     * Start timer only when the
-     * player actually reveals.
-     */
 
     startTimer();
 
@@ -878,10 +822,6 @@ function revealAdjacentCells(
                 }
 
 
-                /*
-                 * Flood fill never opens mines.
-                 */
-
                 if (
                     adjacentCell.mine
                 ) {
@@ -1042,11 +982,6 @@ function chordCell(cell) {
     }
 
 
-    /*
-     * The number of flags must exactly
-     * match the displayed number.
-     */
-
     if (
         flagCount !== mineCount
     ) {
@@ -1114,10 +1049,6 @@ function toggleFlag(cell) {
     }
 
 
-    /*
-     * Remove flag.
-     */
-
     if (
         cell.classList.contains(
             "flagged"
@@ -1136,10 +1067,6 @@ function toggleFlag(cell) {
 
 
     }
-
-    /*
-     * Add flag.
-     */
 
     else {
 
@@ -1199,6 +1126,8 @@ function endGame() {
 
     stopTimer();
 
+    setGameResultStyle("lose");
+
 
     cells.forEach((cell) => {
 
@@ -1252,10 +1181,8 @@ function checkWin() {
 
     stopTimer();
 
+    setGameResultStyle("win");
 
-    /*
-     * Automatically flag remaining mines.
-     */
 
     cells.forEach((cell) => {
 
@@ -1287,20 +1214,8 @@ function checkWin() {
 
 
 /* =========================================================
-   =========================================================
    NO GUESSING MODE
-   =========================================================
 ========================================================= */
-
-
-/*
- * The important rule:
- *
- * A No Guessing board is accepted ONLY when
- * the logical solver can finish it.
- *
- * There is NO random fallback board.
- */
 
 
 /* =========================================================
@@ -1320,11 +1235,6 @@ function generateGuaranteedLogicalBoard(
     const total =
         ROWS * COLS;
 
-
-    /*
-     * The player's actual first click
-     * is now the guaranteed zero cell.
-     */
 
     const safeArea =
         getSafeStartingArea(
@@ -1346,10 +1256,6 @@ function generateGuaranteedLogicalBoard(
 
     }
 
-
-    /*
-     * Try random boards.
-     */
 
     let maxAttempts;
 
@@ -1382,11 +1288,6 @@ function generateGuaranteedLogicalBoard(
         clearMines();
 
 
-        /*
-         * Never put a mine inside
-         * the first-click area.
-         */
-
         placeMinesOutsideSafeArea(
             safeArea
         );
@@ -1394,11 +1295,6 @@ function generateGuaranteedLogicalBoard(
 
         calculateAdjacentMines();
 
-
-        /*
-         * The actual clicked cell
-         * MUST be zero.
-         */
 
         if (
             adjacentMines[firstIndex] !== 0
@@ -1408,11 +1304,6 @@ function generateGuaranteedLogicalBoard(
 
         }
 
-
-        /*
-         * The entire board must be
-         * solvable without guessing.
-         */
 
         if (
             verifyBoardWithoutGuessing(
@@ -1428,11 +1319,6 @@ function generateGuaranteedLogicalBoard(
 
     }
 
-
-    /*
-     * Do NOT accept an unverified
-     * random board.
-     */
 
     console.error(
         "Could not generate a logical No Guessing board."
@@ -1483,10 +1369,6 @@ function createShuffledIndices(
 
     }
 
-
-    /*
-     * Fisher-Yates shuffle.
-     */
 
     for (
         let i = count - 1;
@@ -1619,13 +1501,6 @@ function placeMinesOutsideSafeArea(
     }
 
 
-    /*
-     * Partial Fisher-Yates.
-     *
-     * Much faster than repeatedly
-     * generating random duplicate indices.
-     */
-
     for (
         let i = 0;
         i < MINES;
@@ -1666,14 +1541,6 @@ function placeMinesOutsideSafeArea(
 
 function generateStructuredLogicalBoard() {
 
-    /*
-     * Try several deterministic patterns.
-     *
-     * These are useful as a guaranteed fallback
-     * candidate, but they are still checked by
-     * verifyBoardWithoutGuessing().
-     */
-
     const patterns = [
         "horizontal",
         "vertical",
@@ -1698,12 +1565,6 @@ function generateStructuredLogicalBoard() {
             calculateAdjacentMines();
 
 
-            /*
-             * Try every possible first cell.
-             * We need at least one safe logical
-             * starting position.
-             */
-
             for (
                 let firstIndex = 0;
                 firstIndex < cells.length;
@@ -1724,11 +1585,6 @@ function generateStructuredLogicalBoard() {
                         firstIndex
                     );
 
-
-                /*
-                 * First cell must have zero
-                 * neighbouring mines.
-                 */
 
                 if (
                     adjacentMines[
@@ -1773,10 +1629,6 @@ function buildPattern(
 
     let count = 0;
 
-
-    /*
-     * Horizontal bands.
-     */
 
     if (
         pattern === "horizontal"
@@ -1839,10 +1691,6 @@ function buildPattern(
     }
 
 
-    /*
-     * Vertical bands.
-     */
-
     if (
         pattern === "vertical"
     ) {
@@ -1904,10 +1752,6 @@ function buildPattern(
     }
 
 
-    /*
-     * Checker pattern.
-     */
-
     if (
         pattern === "checker"
     ) {
@@ -1959,10 +1803,6 @@ function buildPattern(
 
     }
 
-
-    /*
-     * 2x2 block pattern.
-     */
 
     if (
         pattern === "blocks"
@@ -2041,27 +1881,6 @@ function buildPattern(
    STRICT NO-GUESS VERIFICATION
 ========================================================= */
 
-/*
- * This is a simulation of a player
- * who refuses to guess.
- *
- * The simulated player can only:
- *
- * 1. Reveal cells that are mathematically
- *    guaranteed safe.
- *
- * 2. Mark cells that are mathematically
- *    guaranteed mines.
- *
- * 3. Use equation/subset deductions.
- *
- * 4. Use exact local constraint analysis.
- *
- * If there is ever a point where no certain
- * move exists while safe cells remain,
- * the board is rejected.
- */
-
 function verifyBoardWithoutGuessing(
     firstIndex
 ) {
@@ -2082,10 +1901,6 @@ function verifyBoardWithoutGuessing(
         );
 
 
-    /*
-     * First cell must be safe.
-     */
-
     if (
         cells[firstIndex].mine
     ) {
@@ -2094,10 +1909,6 @@ function verifyBoardWithoutGuessing(
 
     }
 
-
-    /*
-     * First cell must be zero.
-     */
 
     if (
         adjacentMines[firstIndex] !== 0
@@ -2117,20 +1928,10 @@ function verifyBoardWithoutGuessing(
     let safetyCounter = 0;
 
 
-    /*
-     * Continue until no more progress
-     * can be made.
-     */
-
     while (true) {
 
         safetyCounter++;
 
-
-        /*
-         * Protection against an accidental
-         * infinite loop.
-         */
 
         if (
             safetyCounter >
@@ -2207,16 +2008,9 @@ function verifyBoardWithoutGuessing(
         }
 
 
-        /*
-         * =====================================
-         * EXACT LOCAL LOGIC
-         * =====================================
-         *
-         * Look at connected frontier
-         * components and determine whether
-         * some cell must be safe or must
-         * be a mine.
-         */
+        /* =====================================
+           EXACT LOCAL LOGIC
+        ===================================== */
 
         const exactResult =
             applyExactLogic(
@@ -2243,10 +2037,6 @@ function verifyBoardWithoutGuessing(
         }
 
 
-        /*
-         * Check whether everything is solved.
-         */
-
         if (
             isSimulationSolved(
                 revealed,
@@ -2258,12 +2048,6 @@ function verifyBoardWithoutGuessing(
 
         }
 
-
-        /*
-         * If nothing changed and the board
-         * is not solved, then the player
-         * would have to guess.
-         */
 
         if (!changed) {
 
@@ -2350,10 +2134,6 @@ function applyBasicLogic(
             knownMineCount;
 
 
-        /*
-         * Invalid equation.
-         */
-
         if (
             remaining < 0 ||
             remaining > unknown.length
@@ -2366,12 +2146,6 @@ function applyBasicLogic(
 
         }
 
-
-        /*
-         * No mines remain.
-         * Therefore all unknown cells
-         * are safe.
-         */
 
         if (
             remaining === 0 &&
@@ -2400,10 +2174,6 @@ function applyBasicLogic(
 
         }
 
-
-        /*
-         * Every unknown cell is a mine.
-         */
 
         else if (
             remaining === unknown.length &&
@@ -2576,10 +2346,6 @@ function applySubsetLogic(
                 equations[j];
 
 
-            /*
-             * A ⊂ B
-             */
-
             if (
                 isSubset(
                     a.cells,
@@ -2672,10 +2438,6 @@ function applySubsetLogic(
 
             }
 
-
-            /*
-             * B ⊂ A
-             */
 
             else if (
                 isSubset(
@@ -2786,26 +2548,6 @@ function applySubsetLogic(
    EXACT LOCAL LOGIC
 ========================================================= */
 
-/*
- * This checks small connected groups of unknown
- * cells by enumerating all mathematically valid
- * mine arrangements.
- *
- * If ALL valid arrangements say:
- *
- *   cell = mine
- *
- * or
- *
- *   cell = safe
- *
- * then that cell is logically certain.
- *
- * This is NOT guessing.
- *
- * It is exhaustive logical deduction.
- */
-
 function applyExactLogic(
     revealed,
     knownMines
@@ -2830,10 +2572,6 @@ function applyExactLogic(
     }
 
 
-    /*
-     * Build connected components.
-     */
-
     const components =
         buildEquationComponents(
             equations
@@ -2847,13 +2585,6 @@ function applyExactLogic(
         const component
         of components
     ) {
-
-        /*
-         * Do not perform exponential enumeration
-         * on an enormous component.
-         *
-         * Basic and subset logic handle those.
-         */
 
         if (
             component.cells.length > 18
@@ -3121,11 +2852,6 @@ function solveExactComponent(
         variables.length;
 
 
-    /*
-     * For safety, exact enumeration is
-     * limited to relatively small components.
-     */
-
     if (
         variableCount > 18
     ) {
@@ -3156,10 +2882,6 @@ function solveExactComponent(
 
     }
 
-
-    /*
-     * Convert equations to bit masks.
-     */
 
     const masks = [];
 
@@ -3203,18 +2925,10 @@ function solveExactComponent(
         (1 << variableCount) - 1;
 
 
-    /*
-     * Recursive enumeration.
-     */
-
     function search(
         variableIndex,
         currentMask
     ) {
-
-        /*
-         * Check equations for contradiction.
-         */
 
         for (
             const equation
@@ -3271,10 +2985,6 @@ function solveExactComponent(
         }
 
 
-        /*
-         * All variables assigned.
-         */
-
         if (
             variableIndex >=
             variableCount
@@ -3316,19 +3026,11 @@ function solveExactComponent(
         }
 
 
-        /*
-         * Try SAFE.
-         */
-
         search(
             variableIndex + 1,
             currentMask
         );
 
-
-        /*
-         * Try MINE.
-         */
 
         search(
             variableIndex + 1,
@@ -3338,10 +3040,6 @@ function solveExactComponent(
 
     }
 
-
-    /*
-     * Start with all possible mine masks.
-     */
 
     mineMaskAll =
         (1 << variableCount) - 1;
@@ -3356,10 +3054,6 @@ function solveExactComponent(
         0
     );
 
-
-    /*
-     * No valid arrangement.
-     */
 
     if (
         solutionCount === 0
@@ -3389,10 +3083,6 @@ function solveExactComponent(
             1 << i;
 
 
-        /*
-         * Bit exists in EVERY solution.
-         */
-
         if (
             (mineMaskAll & bit) !== 0
         ) {
@@ -3403,10 +3093,6 @@ function solveExactComponent(
 
         }
 
-
-        /*
-         * Bit exists in NO solution.
-         */
 
         else if (
             (mineMaskNone & bit) === 0
@@ -3512,10 +3198,6 @@ function revealSimulationArea(
 
         queueIndex++;
 
-
-        /*
-         * Number cell stops flood fill.
-         */
 
         if (
             adjacentMines[index] > 0
@@ -3640,10 +3322,6 @@ function isSimulationSolved(
         index++
     ) {
 
-        /*
-         * Every real mine must be known.
-         */
-
         if (
             cells[index].mine &&
             !knownMines[index]
@@ -3653,10 +3331,6 @@ function isSimulationSolved(
 
         }
 
-
-        /*
-         * Every safe cell must be revealed.
-         */
 
         if (
             !cells[index].mine &&
@@ -3836,10 +3510,6 @@ document
                     mode;
 
 
-                /*
-                 * Active mode.
-                 */
-
                 document
                     .querySelectorAll(
                         ".mode-button"
@@ -3860,10 +3530,6 @@ document
                 );
 
 
-                /*
-                 * Guess button.
-                 */
-
                 const guessButton =
                     document.querySelector(
                         '[data-difficulty="guess"]'
@@ -3878,11 +3544,6 @@ document
                     guessButton.disabled =
                         true;
 
-
-                    /*
-                     * If Guess is selected,
-                     * switch to Easy.
-                     */
 
                     if (
                         guessButton.classList.contains(
@@ -3969,6 +3630,32 @@ function updateGuessButton() {
         gameMode ===
         "no-guessing";
 
+}
+
+function clearGameResultStyle() {
+    const boardElement = document.getElementById("board");
+
+    boardElement.classList.remove(
+        "game-won",
+        "game-lost"
+    );
+}
+
+
+function setGameResultStyle(result) {
+    const boardElement = document.getElementById("board");
+
+    boardElement.classList.remove(
+        "game-won",
+        "game-lost"
+    );
+
+    if (result === "win") {
+        boardElement.classList.add("game-won");
+    }
+    else if (result === "lose") {
+        boardElement.classList.add("game-lost");
+    }
 }
 
 

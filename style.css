@@ -432,6 +432,18 @@ button:hover {
     align-items: center;
 }
 
+/* =========================
+   Game Result Board Colors
+========================= */
+
+.board.game-won .cell {
+    border-color: #d4af37;
+}
+
+.board.game-lost .cell {
+    border-color: #e53935;
+}
+
 
 /* =========================
    Mobile
