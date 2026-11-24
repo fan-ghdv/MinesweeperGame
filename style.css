@@ -426,10 +426,39 @@ button:hover {
 
 .board-wrapper {
     width: 100%;
+    max-width: 100%;
 
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: block;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    -webkit-overflow-scrolling: touch;
+
+    padding-bottom: 8px;
+}
+
+.board {
+    display: grid;
+
+    grid-template-columns: repeat(var(--cols), 28px);
+    grid-template-rows: repeat(var(--rows), 28px);
+
+    gap: 1px;
+
+    width: max-content;
+    height: max-content;
+
+    padding: 2px;
+
+    background: #242321;
+
+    border-radius: 0;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.45);
+
+    margin: 0 auto;
 }
 
 /* =========================
@@ -530,7 +559,7 @@ button:hover {
         padding: 2px;
         gap: 1px;
 
-        overflow: visible;
+        margin: 0 auto;
     }
 
     .cell {
